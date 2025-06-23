@@ -281,17 +281,25 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
 
 def build_ukbcd_args(config_data: dict) -> list:
     """Build the argument list for UKBinCollectionApp from config data."""
-    council = config_data.get("original_parser") or config_data.get("council", "")
+    council = config_data.get("original_parser") or config_data.get("council")
     url = config_data.get("url", "")
+
+    if not council:
+        raise ValueError("Missing 'council' in configuration.")
+    if not url and not config_data.get("skip_get_url", False):
+        raise ValueError("Missing 'url' and 'skip_get_url' not set.")
 
     args = [council, url]
 
     for key, value in config_data.items():
-        if key in EXCLUDED_ARG_KEYS:
+        if key in EXCLUDED_ARG_KEYS or value in (None, ""):
             continue
-        if key == "web_driver" and value is not None:
-            value = value.rstrip("/")
-        args.append(f"--{key}={value}")
+        if isinstance(value, bool):
+            # Support flags like --headless and --local_browser
+            if value:
+                args.append(f"--{key}")
+        else:
+            args.append(f"--{key}={value}")
 
     return args
 
