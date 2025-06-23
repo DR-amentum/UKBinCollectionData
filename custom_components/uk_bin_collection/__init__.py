@@ -188,7 +188,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
         # Prepare arguments for UKBinCollectionApp
         args = build_ukbcd_args(config_entry.data)
-        _LOGGER.debug(f"{LOG_PREFIX} UKBinCollectionApp args: {args}")
+        _LOGGER.warning("🧪 UKBinCollectionApp args: %s", args)
 
         # Initialize the UK Bin Collection Data application
         ukbcd = UKBinCollectionApp()
