@@ -16,7 +16,8 @@ def import_council_module(module_name, src_path="councils"):
     module_path = os.path.realpath(os.path.join(os.path.dirname(__file__), src_path))
     if module_path not in sys.path:
         sys.path.append(module_path)
-    return importlib.import_module(module_name)
+        return importlib.import_module(f"custom_components.uk_bin_collection.uk_bin_collection.uk_bin_collection.councils.{module_name}")
+
 
 
 class UKBinCollectionApp:
