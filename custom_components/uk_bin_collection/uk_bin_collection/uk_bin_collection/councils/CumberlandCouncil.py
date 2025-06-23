@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from uk_bin_collection.uk_bin_collection.common import *
 from uk_bin_collection.uk_bin_collection.get_bin_data import AbstractGetBinDataClass
 
-
 # import the wonderful Beautiful Soup and the URL grabber
 class CouncilClass(AbstractGetBinDataClass):
     """
@@ -13,8 +12,10 @@ class CouncilClass(AbstractGetBinDataClass):
     implementation.
     """
 
-    def parse_data(self, page: str, **kwargs) -> dict:
+    def council_name(self):
+        return "Cumberland (Renderform)"
 
+    def parse_data(self, page: str, **kwargs) -> dict:
         user_uprn = kwargs.get("uprn")
         postcode = kwargs.get("postcode")
         check_uprn(user_uprn)
@@ -30,21 +31,13 @@ class CouncilClass(AbstractGetBinDataClass):
         # Make a BS4 object
         soup = BeautifulSoup(response.content, features="html.parser")
 
-        # print(soup)
-
-        token = (soup.find("input", {"name": "__RequestVerificationToken"})).get(
-            "value"
-        )
-
-        formguid = (soup.find("input", {"name": "FormGuid"})).get("value")
-
-        # print(token)
-        # print(formguid)
+        token = soup.find("input", {"name": "__RequestVerificationToken"}).get("value")
+        formguid = soup.find("input", {"name": "FormGuid"}).get("value")
 
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
             "Origin": "https://waste.cumberland.gov.uk",
-            "Referer": "https://waste.cumberland.gov.uk/renderform?t=25&k=E43CEB1FB59F859833EF2D52B16F3F4EBE1CAB6A",
+            "Referer": URI,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 OPR/98.0.0.0",
             "X-Requested-With": "XMLHttpRequest",
         }
@@ -61,8 +54,6 @@ class CouncilClass(AbstractGetBinDataClass):
             "FF265-text": postcode
         }
 
-        # print(payload)
-
         response = s.post(
             "https://waste.cumberland.gov.uk/renderform/Form",
             headers=headers,
@@ -71,7 +62,6 @@ class CouncilClass(AbstractGetBinDataClass):
 
         soup = BeautifulSoup(response.content, features="html.parser")
         for row in soup.find_all("div", class_="resirow"):
-            # Extract the type of collection (e.g., Recycling, Refuse)
             collection_type_div = row.find("div", class_="col")
             collection_type = (
                 collection_type_div.get("class")[1]
@@ -79,7 +69,6 @@ class CouncilClass(AbstractGetBinDataClass):
                 else "Unknown"
             )
 
-            # Extract the collection date
             date_div = row.find("div", style="width:360px;")
             collection_date = date_div.text.strip() if date_div else "Unknown"
 

@@ -249,38 +249,51 @@ class UkBinCollectionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={"selenium_message": ""},
         )
-
     async def get_councils_json(self) -> Dict[str, Any]:
-        """Fetch and return the supported councils data, including aliases and sorted alphabetically."""
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(INPUT_JSON_URL) as response:
-                    response.raise_for_status()
-                    data_text = await response.text()
-                    original_data = json.loads(data_text)
+        _LOGGER.warning("⚠️ Using hardcoded council list for local development.")
+        return {
+            "cumberland_renderform": {
+                "wiki_name": "Cumberland (Renderform)",
+                "url": "https://waste.cumberland.gov.uk/renderform?t=25&k=E43CEB1FB59F859833EF2D52B16F3F4EBE1CAB6A",
+                "postcode": True,
+                "uprn": True,
+                "house_number": False,
+                "usrn": False,
+                "skip_get_url": True
+            }
+        }
 
-                    normalized_data = {}
-                    for key, value in original_data.items():
-                        normalized_data[key] = value
-                        for alias in value.get("supported_councils", []):
-                            alias_data = value.copy()
-                            alias_data["original_parser"] = key
-                            alias_data["wiki_name"] = (
-                                f"{alias.replace('Council', ' Council')} (via Google Calendar)"
-                            )
-                            normalized_data[alias] = alias_data
+    # async def get_councils_json(self) -> Dict[str, Any]:
+        # """Fetch and return the supported councils data, including aliases and sorted alphabetically."""
+        # try:
+            # async with aiohttp.ClientSession() as session:
+                # async with session.get(INPUT_JSON_URL) as response:
+                    # response.raise_for_status()
+                    # data_text = await response.text()
+                    # original_data = json.loads(data_text)
 
-                    # Sort alphabetically by key (council ID)
-                    sorted_data = dict(sorted(normalized_data.items()))
+                    # normalized_data = {}
+                    # for key, value in original_data.items():
+                        # normalized_data[key] = value
+                        # for alias in value.get("supported_councils", []):
+                            # alias_data = value.copy()
+                            # alias_data["original_parser"] = key
+                            # alias_data["wiki_name"] = (
+                                # f"{alias.replace('Council', ' Council')} (via Google Calendar)"
+                            # )
+                            # normalized_data[alias] = alias_data
 
-                    _LOGGER.debug(
-                        "Loaded and sorted %d councils (with aliases)", len(sorted_data)
-                    )
-                    return sorted_data
+                    # # Sort alphabetically by key (council ID)
+                    # sorted_data = dict(sorted(normalized_data.items()))
 
-        except Exception as e:
-            _LOGGER.exception("Error fetching council data: %s", e)
-            return {}
+                    # _LOGGER.debug(
+                        # "Loaded and sorted %d councils (with aliases)", len(sorted_data)
+                    # )
+                    # return sorted_data
+
+        # except Exception as e:
+            # _LOGGER.exception("Error fetching council data: %s", e)
+            # return {}
 
     async def get_council_schema(self, council: str) -> vol.Schema:
         """Generate the form schema based on council requirements."""
