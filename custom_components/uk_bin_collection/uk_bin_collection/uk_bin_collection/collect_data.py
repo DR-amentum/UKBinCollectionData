@@ -1,5 +1,6 @@
 import argparse
 import importlib
+import importlib.util
 import os
 import sys
 import logging
@@ -12,12 +13,18 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def import_council_module(module_name, src_path="councils"):
-    """Dynamically import the council processor module."""
-    module_path = os.path.realpath(os.path.join(os.path.dirname(__file__), src_path))
-    if module_path not in sys.path:
-        sys.path.append(module_path)
-        return importlib.import_module(f"uk_bin_collection.uk_bin_collection.councils.{module_name}")
+    """Dynamically import a council processor module from file."""
+    base_path = os.path.dirname(__file__)
+    full_path = os.path.join(base_path, src_path, f"{module_name}.py")
 
+    if not os.path.exists(full_path):
+        _LOGGER.error("Council module file not found: %s", full_path)
+        return None
+
+    spec = importlib.util.spec_from_file_location(module_name, full_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 
