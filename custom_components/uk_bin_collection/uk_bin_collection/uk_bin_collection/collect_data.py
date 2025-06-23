@@ -92,8 +92,18 @@ class UKBinCollectionApp:
         self.parsed_args = None
 
     def set_args(self, args):
-        """Parse the arguments from the command line."""
-        self.parsed_args = self.parser.parse_args(args)
+        try:
+            self.parsed_args = self.parser.parse_args(args)
+        except SystemExit as e:
+            import traceback
+            import sys
+            import logging
+            _LOGGER = logging.getLogger(__name__)
+            _LOGGER.error("💥 argparse failed with SystemExit: %s", e)
+            _LOGGER.error("💥 args = %s", args)
+            _LOGGER.error("💥 traceback:\n%s", "".join(traceback.format_exception(*sys.exc_info())))
+            raise ValueError("Invalid CLI arguments passed to UKBinCollectionApp")
+
 
     def run(self):
         """Run the application with the provided arguments."""
