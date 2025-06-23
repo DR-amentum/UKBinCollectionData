@@ -93,7 +93,7 @@ class UKBinCollectionApp:
 
     def set_args(self, args):
         try:
-            self.parsed_args = self.parser.parse_args(args)
+            self.parsed_args, _ = self.parser.parse_known_args(args)
         except SystemExit as e:
             import traceback
             import sys
