@@ -284,10 +284,12 @@ def build_ukbcd_args(config_data: dict) -> list:
     council = config_data.get("original_parser") or config_data.get("council")
     url = config_data.get("url", "")
 
+    # Even if skip_get_url is set, argparse still expects a second positional arg
+    if not url and config_data.get("skip_get_url", False):
+        url = "https://dummy-url.local"
+
     if not council:
-        raise ValueError("Missing 'council' in configuration.")
-    if not url and not config_data.get("skip_get_url", False):
-        raise ValueError("Missing 'url' and 'skip_get_url' not set.")
+        raise ValueError("Missing required 'council' value")
 
     args = [council, url]
 
@@ -295,13 +297,13 @@ def build_ukbcd_args(config_data: dict) -> list:
         if key in EXCLUDED_ARG_KEYS or value in (None, ""):
             continue
         if isinstance(value, bool):
-            # Support flags like --headless and --local_browser
             if value:
                 args.append(f"--{key}")
         else:
             args.append(f"--{key}={value}")
 
     return args
+
 
 
 class HouseholdBinCoordinator(DataUpdateCoordinator):
