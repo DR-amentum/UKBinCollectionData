@@ -30,7 +30,7 @@ from .const import (
     STATE_ATTR_COLOUR,
     PLATFORMS,
 )
-from uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
+from .uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ from custom_components.uk_bin_collection import (
     build_ukbcd_args,
 )
 from custom_components.uk_bin_collection.const import DOMAIN, LOG_PREFIX, PLATFORMS
-from uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
+from .uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
 
 
 class DummyUKBinCollectionApp:

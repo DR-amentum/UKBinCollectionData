@@ -15,7 +15,7 @@ from datetime import datetime
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, LOG_PREFIX, PLATFORMS, EXCLUDED_ARG_KEYS
-from uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
+from .uk_bin_collection.uk_bin_collection.collect_data import UKBinCollectionApp
 
 
 from homeassistant.helpers import config_validation as cv
